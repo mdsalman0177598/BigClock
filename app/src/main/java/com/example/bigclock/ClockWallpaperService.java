@@ -22,7 +22,6 @@ public class ClockWallpaperService extends WallpaperService {
     }
 
     private class ClockEngine extends Engine {
-
         private final Handler handler = new Handler(Looper.getMainLooper());
         private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private boolean visible;
@@ -65,7 +64,6 @@ public class ClockWallpaperService extends WallpaperService {
         private void drawFrame() {
             SurfaceHolder holder = getSurfaceHolder();
             Canvas canvas = null;
-
             try {
                 canvas = holder.lockCanvas();
                 if (canvas != null) render(canvas);
@@ -80,62 +78,63 @@ public class ClockWallpaperService extends WallpaperService {
             }
 
             handler.removeCallbacks(drawTask);
-            if (visible) handler.postDelayed(drawTask, 1000);
+            if (visible) {
+                // A one-second refresh keeps the clock accurate without heavy work.
+                handler.postDelayed(drawTask, 1000);
+            }
         }
 
         private void render(Canvas canvas) {
-            float w = canvas.getWidth();
-            float h = canvas.getHeight();
+            final float width = canvas.getWidth();
+            final float height = canvas.getHeight();
 
+            // Soft purple-to-pink gradient similar to the reference look.
             paint.setShader(new LinearGradient(
-                    0, 0, w * 0.85f, h,
-                    new int[]{
-                            0xFF5657C9,
-                            0xFF9360D5,
-                            0xFFD875B9,
-                            0xFFF2A2A8
+                    0, 0, width * 0.82f, height,
+                    new int[] {
+                            0xFF6259C9,
+                            0xFF8958D1,
+                            0xFFB65BC6,
+                            0xFFE88AB5
                     },
-                    new float[]{0f, 0.38f, 0.72f, 1f},
+                    new float[] {0f, 0.38f, 0.72f, 1f},
                     Shader.TileMode.CLAMP));
-
-            canvas.drawRect(0, 0, w, h, paint);
+            canvas.drawRect(0, 0, width, height, paint);
             paint.setShader(null);
 
             Date now = new Date();
-
-            String time = new SimpleDateFormat(
-                    "h:mm", Locale.getDefault()).format(now);
-
+            String time = new SimpleDateFormat("h:mm", Locale.ENGLISH).format(now);
             String date = new SimpleDateFormat(
-                    "EEEE, d MMMM", Locale.getDefault()).format(now);
+                    "EEEE, d MMMM", Locale.ENGLISH).format(now).toUpperCase(Locale.ENGLISH);
 
+            // Large, single-line, thin iPhone-inspired clock.
             paint.setTextAlign(Paint.Align.CENTER);
-            paint.setColor(0xFFF9F7FF);
-            paint.setTypeface(
-                    Typeface.create("sans-serif-thin", Typeface.NORMAL));
+            paint.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+            paint.setColor(0xFFFDFBFF);
+            paint.setShadowLayer(3f, 0f, 2f, 0x33000000);
 
-            float timeSize = Math.min(w * 0.235f, h * 0.115f);
-            paint.setTextSize(timeSize);
+            float textSize = Math.min(width * 0.315f, height * 0.155f);
+            paint.setTextSize(textSize);
+            float maxTextWidth = width * 0.90f;
+            float measured = paint.measureText(time);
+            if (measured > maxTextWidth) {
+                textSize *= maxTextWidth / measured;
+                paint.setTextSize(textSize);
+            }
 
-            Paint.FontMetrics fm = paint.getFontMetrics();
-            float baseline = h * 0.34f -
-                    (fm.ascent + fm.descent) / 2f;
+            Paint.FontMetrics metrics = paint.getFontMetrics();
+            float clockCenterY = height * 0.355f;
+            float clockBaseline = clockCenterY - (metrics.ascent + metrics.descent) / 2f;
+            canvas.drawText(time, width / 2f, clockBaseline, paint);
 
-            canvas.drawText(time, w / 2f, baseline, paint);
+            paint.clearShadowLayer();
+            paint.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+            paint.setTextSize(Math.min(width * 0.050f, 22f * getResources()
+                    .getDisplayMetrics().density));
+            paint.setColor(0xFFF8F4FF);
 
-            paint.setTypeface(
-                    Typeface.create("sans-serif-medium", Typeface.NORMAL));
-
-            paint.setTextSize(Math.min(
-                    w * 0.052f,
-                    22f * getResources().getDisplayMetrics().density));
-
-            paint.setColor(0xFFF5F0FF);
-            float dateY = baseline + timeSize * 0.78f;
-
-            canvas.drawText(
-                    date.toUpperCase(Locale.getDefault()),
-                    w / 2f, dateY, paint);
+            float dateY = clockBaseline + textSize * 0.72f;
+            canvas.drawText(date, width / 2f, dateY, paint);
         }
     }
 }
