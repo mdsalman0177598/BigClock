@@ -1,17 +1,19 @@
-BIG CLOCK - LOCK SCREEN V2
+BIG CLOCK — iPhone Tall Clock Patch
 
-This project is a Live Wallpaper app, not a full Android launcher.
-It does not replace Android's secure lock screen or system navigation buttons.
+এই ZIP-এ শুধু দুটি Java source file আছে। এটি সম্পূর্ণ Android project নয়।
 
-Build:
-  gradle assembleDebug
+যে ফাইল দুটি প্রতিস্থাপন করতে হবে:
+1) app/src/main/java/com/example/bigclock/ClockWallpaperService.java
+2) app/src/main/java/com/example/bigclock/MainActivity.java
 
-APK:
-  app/build/outputs/apk/debug/app-debug.apk
+তারপর আগের মতো GitHub Actions দিয়ে APK build করুন।
 
-Install the APK, open Big Clock, tap "Set Lock Screen Wallpaper".
-In Android's wallpaper preview, select Lock screen if the phone offers that option.
-Some Vivo/Funtouch OS versions only offer Home screen or both screens. The app cannot
-force a lock-screen-only choice because Android controls that system picker.
+নতুন বৈশিষ্ট্য:
+- 24-hour সময় (যেমন 13:25), এক লাইনে বিশাল লম্বা ডিজিট
+- তারিখ সময়ের উপরে
+- DARK GLASS: কালো ব্যাকগ্রাউন্ডে বড় ধূসর ডিজিট
+- OCEAN GLASS: সমুদ্র-অনুপ্রাণিত ব্যাকগ্রাউন্ডে স্বচ্ছ সাদা ডিজিট
+- দুই স্টাইল আলাদা Apply বোতাম থেকে নির্বাচন করা যায়
+- Live Wallpaper দৃশ্যমান থাকলে প্রতি সেকেন্ডে সময় আপডেট হয়
 
-No special runtime permissions are requested.
+নোট: Android-এর Live Wallpaper preview থেকে Home/Lock screen নির্বাচন ফোনের সফটওয়্যারের ওপর নির্ভর করে।
