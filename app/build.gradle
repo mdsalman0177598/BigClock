@@ -2,6 +2,10 @@ plugins { id 'com.android.application' }
 android {
     namespace 'com.example.bigclock'
     compileSdk 34
+<<<<<<< HEAD
     defaultConfig { applicationId 'com.example.bigclock'; minSdk 21; targetSdk 28; versionCode 2; versionName '2.0' }
+=======
+    defaultConfig { applicationId 'com.example.bigclock'; minSdk 21; targetSdk 34; versionCode 1; versionName '1.0' }
+>>>>>>> origin/main
     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
 }
